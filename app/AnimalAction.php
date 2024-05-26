@@ -18,7 +18,7 @@ class AnimalAction
 
     public function perform(): bool
     {
-        if ($this->times === 0) {
+        if ($this->times === 1) {
             $this->data = [];
             return false;
         }

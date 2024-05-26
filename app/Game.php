@@ -118,11 +118,20 @@ class Game
                 "next turn"
             ]);
             $answer = $helper->ask($this->input, $this->output, $question);
+            if ($answer == "view zoo") {
+                $this->displayZooAnimalsTable();
+                continue;
+            }
             if ($answer == "next turn") {
                 $this->step();
+                $this->displayZooAnimalsTable();
+                continue;
+            }
+            if ($answer == "view animal shop") {
+                $this->state = self::STATE_ANIMAL_SHOP;
                 break;
             }
-            if ($answer == "interact with animal") {
+            if ($answer == "select animal") {
                 $animalNames = [];
                 foreach ($this->animals as $animal) {
                     $animalNames[] = $animal->name();
@@ -131,6 +140,12 @@ class Game
                 $answer = $helper->ask($this->input, $this->output, $question);
                 $animal = $this->findAnimalByName($answer);
                 $this->displayAnimal($animal);
+                $question = new ChoiceQuestion("select action?", ["feed", "play", "pet", "work", "idle"]);
+                $answer = $helper->ask($this->input, $this->output, $question);
+                switch ($answer) {
+                    case "feed";
+                    $animal->setAction([$animal, "eat"], 2, ["name" => "being fed apple", "food" => "apple"]);
+                }
             }
         }
     }

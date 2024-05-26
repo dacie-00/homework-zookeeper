@@ -26,23 +26,23 @@ $playCommand = new class extends Command {
                 if ($fileInfo->getExtension() === 'json') {
                     $fileName = $fileInfo->getFilename();
                     $animalDefinitions[] = [
-                        "data" => json_decode(file_get_contents($path . "/" . $fileName)),
-                        "fileName" =>$fileName
+                        "path" => $path . "/" . $fileName,
+                        "fileName" => $fileName
                     ];
-                    if (json_last_error() !== JSON_ERROR_NONE) {
-                        $filename = $animalDefinitions[count($animalDefinitions) - 1]['fileName'];
-                        echo "Error - invalid animal definition in $filename: " . json_last_error_msg() . "\n";
-                    }
                 }
             }
         }
         $animals = [];
-        foreach($animalDefinitions as &$animalDefinition) {
+        foreach ($animalDefinitions as &$animalDefinition) {
             try {
-                $parsedAnimal = AnimalParser::parse($animalDefinition["data"]);
+                $parsedAnimal = AnimalParser::parse($animalDefinition["path"]);
                 $animals[$parsedAnimal->kind] = $parsedAnimal;
             } catch (ValidationException $e) {
                 echo "Error - invalid animal definition in " . $animalDefinition["fileName"] . ": " . $e->getMessage() . "\n";
+                exit();
+            } catch (JsonException $e) {
+                $filename = $animalDefinition['fileName'];
+                echo "Error - invalid animal definition in $filename: " . $e->getMessage() . "\n";
                 exit();
             }
         }

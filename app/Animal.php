@@ -78,9 +78,9 @@ class Animal
         $this->incrementHappiness(20);
     }
 
-    public function eat(string $food): void
+    public function eat(array $data): void
     {
-        if ($food == $this->favoriteFood) {
+        if ($data["food"] == $this->favoriteFood) {
             $this->incrementFoodReserves(10);
             $this->incrementHappiness(10);
             return;
@@ -122,22 +122,22 @@ class Animal
 
     public function incrementFoodReserves(int $amount): void
     {
-        $this->foodReserves -= $amount * $this->foodReservesIncreaseRate;
+        $this->foodReserves -= (int) ($amount * $this->foodReservesIncreaseRate);
     }
 
     public function decrementFoodReserves(int $amount): void
     {
-        $this->foodReserves -= $amount * $this->foodReservesDecreaseRate;
+        $this->foodReserves -= (int) ($amount * $this->foodReservesDecreaseRate);
     }
 
     public function incrementHappiness(int $amount): void
     {
-        $this->happiness -= $amount * $this->happinessIncreaseRate;
+        $this->happiness -= (int) ($amount * $this->happinessIncreaseRate);
     }
 
     public function decrementHappiness(int $amount): void
     {
-        $this->happiness -= $amount * $this->happinessDecreaseRate;
+        $this->happiness -= (int) ($amount * $this->happinessDecreaseRate);
     }
 
     public function setName($name)
