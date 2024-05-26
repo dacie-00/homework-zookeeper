@@ -1,0 +1,10 @@
+{
+  "kind": "pig",
+  "sound": "oink",
+  "price": 100,
+  "foodReservesDecreaseRate": 1,
+  "foodReservesIncreaseRate": 1,
+  "happinessDecreaseRate": 1,
+  "happinessIncreaseRate": 1,
+  "favoriteFood": "apple"
+}

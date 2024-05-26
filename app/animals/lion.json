@@ -1,0 +1,10 @@
+{
+  "kind": "lion",
+  "sound": "rawr",
+  "price": 300,
+  "foodReservesDecreaseRate": 2,
+  "foodReservesIncreaseRate": 2,
+  "happinessDecreaseRate": 2,
+  "happinessIncreaseRate": 2,
+  "favoriteFood": "steak"
+}

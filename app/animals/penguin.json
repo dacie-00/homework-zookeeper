@@ -1,0 +1,10 @@
+{
+  "kind": "penguin",
+  "sound": "honk",
+  "price": 800,
+  "foodReservesDecreaseRate": 0.75,
+  "foodReservesIncreaseRate": 1,
+  "happinessDecreaseRate": 1,
+  "happinessIncreaseRate": 1.5,
+  "favoriteFood": "apple"
+}
