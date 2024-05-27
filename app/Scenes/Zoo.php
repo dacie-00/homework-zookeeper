@@ -27,6 +27,7 @@ class Zoo
                 "select animal",
                 "animal shop",
                 "food shop",
+                "food storage",
                 "next turn"
             ]);
             if ($action == "view zoo") {
@@ -44,6 +45,10 @@ class Zoo
             }
             if ($action == "food shop") {
                 $this->game->setState($this->game::STATE_FOOD_SHOP);
+                return;
+            }
+            if ($action == "food storage") {
+                $this->game->setState($this->game::STATE_FOOD_STORAGE);
                 return;
             }
             if ($action == "select animal") {

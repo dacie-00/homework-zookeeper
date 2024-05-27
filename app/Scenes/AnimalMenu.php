@@ -21,17 +21,19 @@ class AnimalMenu
     {
         $this->displayAnimal($this->animal);
         $action = $this->game->askChoiceQuestion("Select action", ["feed", "play", "pet", "work", "idle"]);
-        $turnCount = $this->game->askQuestion("For how many turns? \n > ", function (string $turnCount) {
-            if (!is_numeric($turnCount)) {
-                throw new \RuntimeException("Turn count must be a number");
-            }
-            if ($turnCount < 1 || $turnCount > 100) {
-                throw new \RuntimeException("Turn count can only be in the range of 1 to 100");
-            }
-            return $turnCount;
-        });
-        $turnCount = (int) $turnCount;
-
+        $turnCount = 0;
+        if ($action != "feed") {
+            $turnCount = $this->game->askQuestion("For how many turns? \n > ", function (string $turnCount) {
+                if (!is_numeric($turnCount)) {
+                    throw new \RuntimeException("Turn count must be a number");
+                }
+                if ($turnCount < 1 || $turnCount > 100) {
+                    throw new \RuntimeException("Turn count can only be in the range of 1 to 100");
+                }
+                return $turnCount;
+            });
+            $turnCount = (int) $turnCount;
+        }
         switch ($action) {
             case "feed";
                 $foodNames = [];
@@ -44,7 +46,19 @@ class AnimalMenu
                 }
                 $foodName = $this->game->askChoiceQuestion("Select food to give", $foodNames);
                 $food = $this->game->findFoodByName($foodName);
-                $this->animal->setAction([$this->animal, "eat"], $turnCount, ["name" => "being fed {$food->name()}", "food" => $food]);
+                $foodAmount = $this->game->foods()[$foodName];
+                $feedCount = $this->game->askQuestion("How much? (1 - $foodAmount) \n > ", function (string $feedCount) use ($foodAmount) {
+                    if (!is_numeric($feedCount)) {
+                        throw new \RuntimeException("Food quantity must be a number");
+                    }
+                    if ($feedCount < 1 || $feedCount > $foodAmount) {
+                        throw new \RuntimeException("Food quantity must be >1 and no more than you have in stock");
+                    }
+                    return $feedCount;
+                });
+                $feedCount = (int) $feedCount;
+                $this->game->consumeFood($food, $feedCount);
+                $this->animal->setAction([$this->animal, "eat"], $feedCount, ["name" => "being fed {$food->name()}", "food" => $food]);
                 return;
             case "play";
                 $this->animal->setAction([$this->animal, "play"], $turnCount, ["name" => "playing"]);

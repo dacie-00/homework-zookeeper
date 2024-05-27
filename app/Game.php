@@ -6,6 +6,7 @@ namespace App;
 
 use App\Scenes\AnimalShop;
 use App\Scenes\FoodShop;
+use App\Scenes\FoodStorage;
 use App\Scenes\Zoo;
 use stdClass;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -20,6 +21,7 @@ class Game
     public const STATE_FOOD_SHOP = "food shop";
     public const STATE_ZOO = "zoo";
     const STATE_ANIMAL_MENU = "animal menu";
+    const STATE_FOOD_STORAGE = "food storage";
     const BASE_ANIMAL_PAY = 2;
     static private QuestionHelper $consoleHelper;
     private array $animalTypes;
@@ -60,6 +62,10 @@ class Game
             if ($this->state == self::STATE_FOOD_SHOP) {
                 $foodShop = new FoodShop($this);
                 $foodShop->run();
+            }
+            if ($this->state == self::STATE_FOOD_STORAGE) {
+                $foodStorage = new FoodStorage($this);
+                $foodStorage->run();
             }
             if ($this->state == self::STATE_ZOO) {
                 $zoo = new Zoo($this);
@@ -171,7 +177,7 @@ class Game
         return $this->animalTypes;
     }
 
-    public function foods(): array
+    public function &foods(): array
     {
         return $this->foods;
     }
@@ -193,5 +199,13 @@ class Game
             return;
         }
         $this->foods[$food->name()] += 1;
+    }
+
+    public function consumeFood(Food $food, int $feedCount): void
+    {
+        $this->foods()[$food->name()] -= $feedCount;
+        if ($this->foods[$food->name()] < 0) {
+            unset($this->foods[$food->name()]);
+        }
     }
 }
