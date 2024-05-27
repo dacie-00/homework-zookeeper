@@ -15,7 +15,7 @@ class FoodStorage
         $this->game = $game;
     }
 
-    public function run()
+    public function run(): void
     {
         $this->displayTable();
         readline("Return to zoo");

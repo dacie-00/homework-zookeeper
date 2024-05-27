@@ -15,7 +15,7 @@ class ItemParser
         $this->schema = $schema;
     }
 
-    public function parse($path)
+    public function parse(string $path)
     {
         $animal = json_decode(file_get_contents($path), false, 512, JSON_THROW_ON_ERROR);
         return self::processor()->process($this->schema(), $animal);

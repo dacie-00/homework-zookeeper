@@ -49,15 +49,17 @@ class AnimalMenu
                 $foodName = $this->game->askChoiceQuestion("Select food to give", $foodNames);
                 $food = $this->game->findFoodByName($foodName);
                 $foodAmount = $this->game->foods()[$foodName];
-                $feedCount = $this->game->askQuestion("How much? (1 - $foodAmount) \n > ", function (string $feedCount) use ($foodAmount) {
-                    if (!is_numeric($feedCount)) {
-                        throw new RuntimeException("Food quantity must be a number");
+                $feedCount = $this->game->askQuestion("How much? (1 - $foodAmount) \n > ",
+                    function (string $feedCount) use ($foodAmount): string {
+                        if (!is_numeric($feedCount)) {
+                            throw new RuntimeException("Food quantity must be a number");
+                        }
+                        if ($feedCount < 1 || $feedCount > $foodAmount) {
+                            throw new RuntimeException("Food quantity must be >1 and no more than you have in stock");
+                        }
+                        return $feedCount;
                     }
-                    if ($feedCount < 1 || $feedCount > $foodAmount) {
-                        throw new RuntimeException("Food quantity must be >1 and no more than you have in stock");
-                    }
-                    return $feedCount;
-                });
+                );
                 $feedCount = (int)$feedCount;
                 $this->game->consumeFood($food, $feedCount);
                 $this->animal->setAction([$this->animal, "eat"], $feedCount, ["name" => "being fed {$food->name()}", "food" => $food]);
@@ -81,7 +83,7 @@ class AnimalMenu
 
     }
 
-    private function displayAnimal($animal)
+    private function displayAnimal(Animal $animal): void
     {
         $actionName = $animal->actionName();
         echo "{$animal->name()} the {$animal->kind()} (currently $actionName)\n";

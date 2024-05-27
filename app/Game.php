@@ -52,7 +52,7 @@ class Game
         }
     }
 
-    public function run()
+    public function run(): void
     {
         while (true) {
             if ($this->state == self::STATE_ANIMAL_SHOP) {
@@ -86,7 +86,7 @@ class Game
         return $this->animals;
     }
 
-    public function step()
+    public function step(): void
     {
         foreach ($this->animals as $index => $animal) {
             $happinessRatio = max(0.25, $animal->happiness() / Animal::HAPPINESS_MAX);
@@ -107,7 +107,7 @@ class Game
         }
     }
 
-    public function incrementMoney($amount): void
+    public function incrementMoney(int $amount): void
     {
         $this->setMoney($this->money() + $amount);
     }
@@ -177,17 +177,12 @@ class Game
         return $this->animalTypes;
     }
 
-    public function &foods(): array
-    {
-        return $this->foods;
-    }
-
     public function decrementMoney($amount): void
     {
         $this->setMoney($this->money() - $amount);
     }
 
-    public function foodTypes()
+    public function foodTypes(): array
     {
         return $this->foodTypes;
     }
@@ -207,5 +202,10 @@ class Game
         if ($this->foods[$food->name()] < 0) {
             unset($this->foods[$food->name()]);
         }
+    }
+
+    public function &foods(): array
+    {
+        return $this->foods;
     }
 }

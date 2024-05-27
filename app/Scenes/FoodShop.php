@@ -49,21 +49,23 @@ class FoodShop
                 }
                 $money = $this->game->money();
                 $price = $food->price();
-                $quantity = $this->game->askQuestion("Enter your desired quantity (n to cancel) \n > ", function (string $quantity) use ($money, $price) {
-                    if ($quantity == "n") {
+                $quantity = $this->game->askQuestion("Enter your desired quantity (n to cancel) \n > ",
+                    function (string $quantity) use ($money, $price): string {
+                        if ($quantity == "n") {
+                            return $quantity;
+                        }
+                        if (!is_numeric($quantity)) {
+                            throw new RuntimeException("Quantity must be a number");
+                        }
+                        if ($quantity < 1) {
+                            throw new RuntimeException("Quantity must be greater than 0");
+                        }
+                        if ($price * $quantity > $money) {
+                            throw new RuntimeException("You cannot afford so many!");
+                        }
                         return $quantity;
                     }
-                    if (!is_numeric($quantity)) {
-                        throw new RuntimeException("Quantity must be a number");
-                    }
-                    if ($quantity < 1) {
-                        throw new RuntimeException("Quantity must be greater than 0");
-                    }
-                    if ($price * $quantity > $money) {
-                        throw new RuntimeException("You cannot afford so many!");
-                    }
-                    return $quantity;
-                });
+                );
                 if ($quantity == "n") {
                     continue;
                 }
