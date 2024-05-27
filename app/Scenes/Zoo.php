@@ -1,12 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Scenes;
 
 use App\Game;
-use App\UI\StatBar;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class Zoo
 {

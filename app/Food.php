@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App;
 
@@ -32,12 +33,12 @@ class Food
         return $this->name;
     }
 
-    public function nutritionalRatio(): string
+    public function nutritionalRatio(): float
     {
         return $this->nutritionalRatio;
     }
 
-    public function price(): string
+    public function price(): float
     {
         return $this->price;
     }
