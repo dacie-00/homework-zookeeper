@@ -1,6 +1,5 @@
 {
   "name": "steak",
-  "namePlural": "steaks",
   "price": 50,
   "nutritionalRatio": 3
 }

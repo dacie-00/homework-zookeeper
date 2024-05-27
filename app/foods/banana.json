@@ -1,6 +1,5 @@
 {
   "name": "banana",
-  "namePlural": "bananas",
   "price": 5,
   "nutritionalRatio": 1
 }
