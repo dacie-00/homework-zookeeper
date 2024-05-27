@@ -8,17 +8,11 @@ use Nette\Schema\Expect;
 
 class Animal
 {
-    const ACTION_IDLE = "idle";
-    const ACTION_PLAY = "play";
-    const ACTION_PET = "pet";
-    const ACTION_EAT = "eat";
-    const ACTION_WORK = "work";
     const FOOD_RESERVES_MAX = 1000;
     const FOOD_RESERVES_MIN = 0;
     const HAPPINESS_MAX = 1000;
     const HAPPINESS_MIN = 0;
 
-    private string $species;
     private string $name;
     private string $favoriteFood;
     private int $happiness;
@@ -26,7 +20,6 @@ class Animal
     /**
      * @var callable
      */
-    private $defaultAction;
     private AnimalAction $action;
     private string $sound;
     private int $price;
@@ -85,7 +78,7 @@ class Animal
         }
     }
 
-    private function die()
+    private function die(): void
     {
         $this->dead = true;
     }
@@ -94,6 +87,28 @@ class Animal
     {
         $this->decrementHappiness(3);
         $this->decrementFoodReserves(10);
+    }
+
+    public function decrementHappiness(int $amount): void
+    {
+        $this->setHappiness((int)($this->happiness() - $amount * $this->happinessDecreaseRate));
+    }
+
+    public function setHappiness(int $happiness): void
+    {
+        $this->happiness = $happiness;
+        if ($this->happiness < self::HAPPINESS_MIN) {
+            $this->happiness = self::HAPPINESS_MIN;
+            return;
+        }
+        if ($this->happiness > self::HAPPINESS_MAX) {
+            $this->happiness = self::HAPPINESS_MAX;
+        }
+    }
+
+    public function happiness(): int
+    {
+        return $this->happiness;
     }
 
     public function decrementFoodReserves(int $amount): void
@@ -129,23 +144,6 @@ class Animal
         $this->setHappiness((int)($this->happiness() + $amount * $this->happinessIncreaseRate));
     }
 
-    public function setHappiness(int $happiness): void
-    {
-        $this->happiness = $happiness;
-        if ($this->happiness < self::HAPPINESS_MIN) {
-            $this->happiness = self::HAPPINESS_MIN;
-            return;
-        }
-        if ($this->happiness > self::HAPPINESS_MAX) {
-            $this->happiness = self::HAPPINESS_MAX;
-        }
-    }
-
-    public function happiness(): int
-    {
-        return $this->happiness;
-    }
-
     public function pet(): void
     {
         $this->decrementFoodReserves(10);
@@ -155,7 +153,7 @@ class Animal
     public function eat(array $data): void
     {
         if ($data["food"]->name() == $this->favoriteFood) {
-            $this->incrementFoodReserves(10);
+            $this->incrementFoodReserves((int)(10 * $data["food"]->nutritionalRatio()));
             $this->incrementHappiness(10);
             return;
         }
@@ -163,14 +161,14 @@ class Animal
         $this->decrementHappiness(10);
     }
 
+    public function name(): string
+    {
+        return $this->name;
+    }
+
     public function incrementFoodReserves(int $amount): void
     {
         $this->setFoodReserves((int)($this->foodReserves() + $amount * $this->foodReservesIncreaseRate));
-    }
-
-    public function decrementHappiness(int $amount): void
-    {
-        $this->setHappiness((int)($this->happiness() - $amount * $this->happinessDecreaseRate));
     }
 
     public function work(): void
@@ -194,17 +192,12 @@ class Animal
         return $this->action->getData()["name"];
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function dead()
+    public function dead(): bool
     {
         return $this->dead;
     }
@@ -219,7 +212,7 @@ class Animal
         return $this->visitorAmusementRatio;
     }
 
-    public function sound()
+    public function sound(): string
     {
         return $this->sound;
     }
