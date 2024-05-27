@@ -1,5 +1,5 @@
 {
   "name": "banana",
-  "price": 5,
-  "nutritionalRatio": 1
+  "price": 10,
+  "nutritionalRatio": 0.75
 }

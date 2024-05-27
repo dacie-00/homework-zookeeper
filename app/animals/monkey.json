@@ -1,0 +1,11 @@
+{
+  "kind": "monkey",
+  "sound": "oo oo aa aa!",
+  "price": 500,
+  "foodReservesDecreaseRate": 1,
+  "foodReservesIncreaseRate": 1,
+  "happinessDecreaseRate": 3,
+  "happinessIncreaseRate": 3,
+  "visitorAmusementRatio": 5,
+  "favoriteFood": "banana"
+}
