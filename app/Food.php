@@ -30,4 +30,13 @@ class Food
         ]);
     }
 
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function nutritionalRatio(): string
+    {
+        return $this->nutritionalRatio;
+    }
 }

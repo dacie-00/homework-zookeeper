@@ -3,6 +3,7 @@
 namespace App\Scenes;
 
 use App\Game;
+use App\UI\StatBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -16,7 +17,7 @@ class Zoo
         $this->game = $game;
     }
 
-    public function run()
+    public function run(): void
     {
         $this->displayTable();
         while (true) {
@@ -28,21 +29,21 @@ class Zoo
                 "next turn"
             ]);
             if ($action == "view zoo") {
-                $this->displayZooAnimalsTable();
+                $this->displayTable();
                 continue;
             }
             if ($action == "next turn") {
-                $this->step();
-                $this->displayZooAnimalsTable();
+                $this->game->step();
+                $this->displayTable();
                 continue;
             }
             if ($action == "view animal shop") {
-                $this->state = self::STATE_ANIMAL_SHOP;
-                break;
+                $this->game->setState($this->game::STATE_ANIMAL_SHOP);
+                return;
             }
             if ($action == "view food shop") {
-                $this->state = self::STATE_FOOD_SHOP;
-                break;
+                $this->game->setState($this->game::STATE_FOOD_SHOP);
+                return;
             }
             if ($action == "select animal") {
                 $animalNames = [];
@@ -50,24 +51,16 @@ class Zoo
                     $animalNames[] = $animal->name();
                 }
                 $animalName = $this->game->askChoiceQuestion("Which animal?", $animalNames);
-                $animal = $this->findAnimalByName($animalName);
-                $this->displayAnimal($animal);
-                $question = new ChoiceQuestion("select action?", ["feed", "play", "pet", "work", "idle"]);
-                $answer = $helper->ask($this->consoleInput, $this->consoleOutput, $question);
-                switch ($answer) {
-                    case "feed";
-                        $foodNames = [];
-                        foreach ($this->foods as $food) {
-                            $foodNames[] = $food->name();
-                        }
-//                        $animal->setAction([$animal, "eat"], 2, ["name" => "being fed apple", "food" => "apple"]);
-                        break;
-                }
+                $animal = $this->game->findAnimalByName($animalName);
+                $this->game->setState($this->game::STATE_ANIMAL_MENU);
+                $animalMenu = new AnimalMenu($this->game, $animal);
+                $animalMenu->run();
+                $this->displayTable();
             }
         }
     }
 
-    private function displayTable()
+    private function displayTable(): void
     {
         $table = new Table($this->game->consoleOutput());
         $rows = [];
@@ -86,7 +79,7 @@ class Zoo
                 $animal->happiness(),
                 $animal->foodReserves(),
                 $animal->actionName(),
-                $animal->action()->times()
+                $animal->action()->times() < 100000 ? $animal->action()->times() : "forever"
             ];
         }
         $table->setStyle('box');

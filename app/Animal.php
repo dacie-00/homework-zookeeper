@@ -16,6 +16,10 @@ class Animal
     const ACTION_PET = "pet";
     const ACTION_EAT = "eat";
     const ACTION_WORK = "work";
+    const FOOD_RESERVES_MAX = 1000;
+    const FOOD_RESERVES_MIN = 0;
+    const HAPPINESS_MAX = 1000;
+    const HAPPINESS_MIN = 0;
 
     private string $species;
     private string $name;
@@ -33,6 +37,7 @@ class Animal
     private float $foodReservesDecreaseRate;
     private float $happinessIncreaseRate;
     private float $happinessDecreaseRate;
+    private bool $dead = false;
 
     public function __construct($properties)
     {
@@ -56,6 +61,9 @@ class Animal
 
     public function step(): void
     {
+        if ($this->foodReserves == 0) {
+            $this->die();
+        }
         if (!$this->action->perform()) {
             // in practice "times" here is INF, but we can't put in INF because it isn't an integer
             $this->action = new AnimalAction([$this, "idle"], 999999999, ["name" => "idling"]);
@@ -124,22 +132,60 @@ class Animal
 
     public function incrementFoodReserves(int $amount): void
     {
-        $this->foodReserves -= (int) ($amount * $this->foodReservesIncreaseRate);
+//        $this->foodReserves += (int) ($amount * $this->foodReservesIncreaseRate);
+        $this->setFoodReserves($this->getFoodReserves() + $amount * $this->foodReservesIncreaseRate);
     }
 
     public function decrementFoodReserves(int $amount): void
     {
-        $this->foodReserves -= (int) ($amount * $this->foodReservesDecreaseRate);
+//        $this->foodReserves -= (int) ($amount * $this->foodReservesDecreaseRate);
+        $this->setFoodReserves($this->getFoodReserves() - $amount * $this->foodReservesDecreaseRate);
     }
 
     public function incrementHappiness(int $amount): void
     {
-        $this->happiness -= (int) ($amount * $this->happinessIncreaseRate);
+//        $this->happiness += (int) ($amount * $this->happinessIncreaseRate);
+        $this->setHappiness($this->getHappiness() + $amount * $this->happinessIncreaseRate);
     }
 
     public function decrementHappiness(int $amount): void
     {
         $this->happiness -= (int) ($amount * $this->happinessDecreaseRate);
+        $this->setHappiness($this->getHappiness() - $amount * $this->happinessDecreaseRate);
+    }
+
+    public function getHappiness(): int
+    {
+        return $this->happiness;
+    }
+
+    public function setHappiness(int $happiness): void
+    {
+        $this->happiness = $happiness;
+        if ($this->happiness < self::HAPPINESS_MIN) {
+            $this->happiness = self::HAPPINESS_MIN;
+            return;
+        }
+        if ($this->happiness > self::HAPPINESS_MAX) {
+            $this->happiness = self::HAPPINESS_MAX;
+        }
+    }
+
+    public function getFoodReserves(): int
+    {
+        return $this->foodReserves;
+    }
+
+    public function setFoodReserves(int $foodReserves): void
+    {
+        $this->foodReserves = $foodReserves;
+        if ($this->foodReserves < self::FOOD_RESERVES_MIN) {
+            $this->foodReserves = self::FOOD_RESERVES_MIN;
+            return;
+        }
+        if ($this->foodReserves > self::FOOD_RESERVES_MAX) {
+            $this->foodReserves = self::FOOD_RESERVES_MAX;
+        }
     }
 
     public function setName($name)
@@ -164,5 +210,15 @@ class Animal
             "happinessIncreaseRate" => Expect::type("int|float")->default(1),
             "favoriteFood" => Expect::string("undefined")
         ]);
+    }
+
+    private function die()
+    {
+        $this->dead = true;
+    }
+
+    public function dead()
+    {
+        return $this->dead;
     }
 }

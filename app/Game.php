@@ -5,8 +5,11 @@ namespace App;
 
 
 use App\Scenes\AnimalShop;
+use App\Scenes\Zoo;
 use App\UI\StatBar;
+use Closure;
 use stdClass;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -21,6 +24,7 @@ class Game
     public const STATE_ANIMAL_SHOP = "animal shop";
     public const STATE_FOOD_SHOP = "food shop";
     public const STATE_ZOO = "zoo";
+    const STATE_ANIMAL_MENU = "animal menu";
     private array $animalTypes;
     /**
      * @var Animal[]
@@ -32,30 +36,25 @@ class Game
     private string $state;
 
     private array $foodTypes;
+    /**
+     * @var Food[]
+     */
+    private array $foods;
 
     public function __construct(InputInterface $consoleInput, OutputInterface $consoleOutput, array $animalTypes, array $foodTypes)
     {
-        $this->consoleInput = $consoleInput;
         $this->consoleOutput = $consoleOutput;
+        $this->consoleInput = $consoleInput;
         self::$consoleHelper = new QuestionHelper();
         $this->state = self::STATE_ANIMAL_SHOP;
         $this->animalTypes = $animalTypes;
         $this->foodTypes = $foodTypes;
+        foreach ($foodTypes as $foodType) {
+            $this->foods[$foodType->name] = new Food($foodType);
+        }
     }
 
-    public function displayAnimal(Animal $animal): void
-    {
-        $actionName = $animal->actionName();
-        echo "{$animal->name()} the {$animal->kind()} (currently $actionName)\n";
-
-        $foodReserves = $animal->foodReserves();
-        $happiness = $animal->happiness();
-
-        StatBar::display($this->consoleOutput, "Food Reserves", $foodReserves);
-        StatBar::display($this->consoleOutput, "Happiness    ", $happiness);
-    }
-
-    public function run($input, $output)
+    public function run()
     {
         while (true) {
             if ($this->state == self::STATE_ANIMAL_SHOP) {
@@ -66,7 +65,8 @@ class Game
                 $this->foodShop();
             }
             if ($this->state == self::STATE_ZOO) {
-                $this->zoo();
+                $zoo = new Zoo($this);
+                $zoo->run();
             }
         }
     }
@@ -103,35 +103,37 @@ class Game
         return $animal;
     }
 
-    private function zoo(): void
-    {
-    }
-
     public function animals(): array
     {
         return $this->animals;
     }
 
-    private function displayBar(string $name, int $value, int $max, $color = "bright-white"): ProgressBar
+    public function step()
     {
-        $displayBar = new ProgressBar($this->consoleOutput, $max);
-        $displayBar->setFormat("$name [<fg=$color>%bar%</>]\n");
-        $displayBar->setProgress($value);
-        return $displayBar;
-    }
-
-    private function step()
-    {
-        foreach ($this->animals as $animal) {
+        foreach ($this->animals as $index => $animal) {
+            if ($animal->dead()) {
+                echo "Oh no! {$animal->name()} the {$animal->kind()} has died!\n";
+                unset($this->animals[$index]);
+            }
             $animal->step();
         }
     }
 
-    private function findAnimalByName(string $name): ?Animal
+    public function findAnimalByName(string $name): ?Animal
     {
         foreach ($this->animals as $animal) {
             if ($animal->name() == $name) {
                 return $animal;
+            }
+        }
+        return null;
+    }
+
+    public function findFoodByName(string $name): ?Food
+    {
+        foreach ($this->foods as $food) {
+            if ($food->name() == $name) {
+                return $food;
             }
         }
         return null;
@@ -153,9 +155,12 @@ class Game
         return self::$consoleHelper->ask($this->consoleInput, $this->consoleOutput, $question);
     }
 
-    public function askQuestion(string $prompt): string
+    public function askQuestion(string $prompt, ?callable $validator = null): string
     {
         $question = new Question($prompt);
+        if ($validator !== null) {
+            $question->setValidator($validator);
+        }
         return self::$consoleHelper->ask($this->consoleInput, $this->consoleOutput, $question);
     }
 
@@ -167,5 +172,10 @@ class Game
     public function animalTypes(): array
     {
         return $this->animalTypes;
+    }
+
+    public function foods(): array
+    {
+        return $this->foods;
     }
 }
