@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Scenes;
 
@@ -20,9 +21,9 @@ class AnimalMenu
     public function run(): void
     {
         $this->displayAnimal($this->animal);
-        $action = $this->game->askChoiceQuestion("Select action", ["feed", "play", "pet", "work", "idle"]);
+        $action = $this->game->askChoiceQuestion("Select action", ["feed", "play", "pet", "work", "idle", "talk"]);
         $turnCount = 0;
-        if ($action != "feed") {
+        if ($action != "feed" && $action != "talk") {
             $turnCount = $this->game->askQuestion("For how many turns? \n > ", function (string $turnCount) {
                 if (!is_numeric($turnCount)) {
                     throw new \RuntimeException("Turn count must be a number");
@@ -71,6 +72,9 @@ class AnimalMenu
                 return;
             case "idle";
                 $this->animal->setAction([$this->animal, "idle"], $turnCount, ["name" => "idling"]);
+                return;
+            case "talk";
+                echo $this->animal->sound() . "\n";
                 return;
         }
 
