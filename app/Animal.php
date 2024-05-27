@@ -218,4 +218,9 @@ class Animal
     {
         return $this->visitorAmusementRatio;
     }
+
+    public function sound()
+    {
+        return $this->sound;
+    }
 }
