@@ -221,4 +221,9 @@ class Animal
     {
         return $this->dead;
     }
+
+    public function price(): int
+    {
+        return $this->price;
+    }
 }

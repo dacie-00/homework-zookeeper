@@ -16,26 +16,37 @@ class AnimalShop
 
     public function run(): void
     {
-        $this->displayTable();
+        $messages = [];
         while (true) {
+            $this->displayTable();
+            echo "You have {$this->game->money()}$\n";
+            if (!empty($messages)) {
+                foreach($messages as $message) {
+                    echo $message . "\n";
+                }
+            }
+            $messages = [];
             $action = $this->game->askChoiceQuestion("What do you want to do?", [
                 "display available animals",
                 "purchase animal",
                 "exit shop"
             ]);
             if ($action === "display available animals") {
-                $this->displayTable();
                 continue;
             }
             if ($action == "purchase animal") {
                 $animalNames = array_column($this->game->animalTypes(), "kind");
                 $animal = $this->game->askChoiceQuestion("Which animal?", $animalNames);
-                $newAnimal = $this->game->addAnimal($this->game->animalTypes()[$animal]);
-
+                $animal = $this->game->animalTypes()[$animal];
+                if ($animal->price > $this->game->money()) {
+                    $messages[] = "You cannot afford the $animal->kind!";
+                    continue;
+                }
+                $this->game->decrementMoney($animal->price);
+                $newAnimal = $this->game->addAnimal($animal);
                 $name = $this->game->askQuestion("What will the {$newAnimal->kind()}'s name be? ");
                 $newAnimal->setName($name);
-                echo "The new animal has been added to your zoo!\n";
-                $this->displayTable();
+                $messages[] = "{$newAnimal->name()} the {$newAnimal->kind()} has been added to your zoo!";
                 continue;
             }
             if ($action == "exit shop") {

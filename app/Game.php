@@ -34,6 +34,7 @@ class Game
     private OutputInterface $consoleOutput;
     static private QuestionHelper $consoleHelper;
     private string $state;
+    private int $money = 1000;
 
     private array $foodTypes;
     /**
@@ -177,5 +178,25 @@ class Game
     public function foods(): array
     {
         return $this->foods;
+    }
+
+    public function money(): int
+    {
+        return $this->money;
+    }
+
+    public function setMoney(int $amount): void
+    {
+        $this->money = $amount;
+    }
+
+    public function incrementMoney($amount): void
+    {
+        $this->setMoney($this->money() + $amount);
+    }
+
+    public function decrementMoney($amount): void
+    {
+        $this->setMoney($this->money() - $amount);
     }
 }
