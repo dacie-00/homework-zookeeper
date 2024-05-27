@@ -6,6 +6,8 @@ namespace App;
 use App;
 use App\AnimalAction;
 use Closure;
+use Nette\Schema\Elements\Structure;
+use Nette\Schema\Expect;
 
 class Animal
 {
@@ -148,5 +150,19 @@ class Animal
     public function name(): string
     {
         return $this->name;
+    }
+
+    public static function schema(): Structure
+    {
+        return Expect::structure([
+            "kind" => Expect::string(),
+            "sound" => Expect::string("undefined"),
+            "price" => Expect::int(100),
+            "foodReservesDecreaseRate" => Expect::type("int|float")->default(1),
+            "foodReservesIncreaseRate" => Expect::type("int|float")->default(1),
+            "happinessDecreaseRate" => Expect::type("int|float")->default(1),
+            "happinessIncreaseRate" => Expect::type("int|float")->default(1),
+            "favoriteFood" => Expect::string("undefined")
+        ]);
     }
 }
