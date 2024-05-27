@@ -154,7 +154,7 @@ class Animal
 
     public function eat(array $data): void
     {
-        if ($data["food"] == $this->favoriteFood) {
+        if ($data["food"]->name() == $this->favoriteFood) {
             $this->incrementFoodReserves(10);
             $this->incrementHappiness(10);
             return;
