@@ -23,6 +23,10 @@ class FoodStorage
 
     private function displayTable(): void
     {
+        if (count($this->game->foods()) == 0) {
+            echo "You have no food in your storage!\n";
+            return;
+        }
         $table = new Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Food Storage");
