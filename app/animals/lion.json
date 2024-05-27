@@ -6,5 +6,6 @@
   "foodReservesIncreaseRate": 2,
   "happinessDecreaseRate": 2,
   "happinessIncreaseRate": 2,
+  "visitorAmusementRatio": 3,
   "favoriteFood": "steak"
 }

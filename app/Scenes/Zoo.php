@@ -21,6 +21,7 @@ class Zoo
     {
         $this->displayTable();
         while (true) {
+            echo "You have {$this->game->money()}$\n";
             $action = $this->game->askChoiceQuestion("What do you want to do?", [
                 "view zoo",
                 "select animal",

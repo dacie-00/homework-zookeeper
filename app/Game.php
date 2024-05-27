@@ -6,14 +6,8 @@ namespace App;
 
 use App\Scenes\AnimalShop;
 use App\Scenes\Zoo;
-use App\UI\StatBar;
-use Closure;
 use stdClass;
-use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Helper\Helper;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -25,6 +19,8 @@ class Game
     public const STATE_FOOD_SHOP = "food shop";
     public const STATE_ZOO = "zoo";
     const STATE_ANIMAL_MENU = "animal menu";
+    const BASE_ANIMAL_PAY = 2;
+    static private QuestionHelper $consoleHelper;
     private array $animalTypes;
     /**
      * @var Animal[]
@@ -32,7 +28,6 @@ class Game
     private array $animals = [];
     private InputInterface $consoleInput;
     private OutputInterface $consoleOutput;
-    static private QuestionHelper $consoleHelper;
     private string $state;
     private int $money = 1000;
 
@@ -112,12 +107,37 @@ class Game
     public function step()
     {
         foreach ($this->animals as $index => $animal) {
+            $happinessRatio = max(0.25, $animal->happiness() / Animal::HAPPINESS_MAX);
+            $action = $animal->actionName();
+            $pay = self::BASE_ANIMAL_PAY * $animal->visitorAmusementRatio() * $happinessRatio;
+            if ($action == "working") {
+                $this->incrementMoney((int) ($pay * 2));
+            } elseif ($action == "idling") {
+                $this->incrementMoney((int) ($pay * 0.25));
+            } else {
+                $this->incrementMoney((int) $pay);
+            }
+            $animal->step();
             if ($animal->dead()) {
                 echo "Oh no! {$animal->name()} the {$animal->kind()} has died!\n";
                 unset($this->animals[$index]);
             }
-            $animal->step();
         }
+    }
+
+    public function incrementMoney($amount): void
+    {
+        $this->setMoney($this->money() + $amount);
+    }
+
+    public function setMoney(int $amount): void
+    {
+        $this->money = $amount;
+    }
+
+    public function money(): int
+    {
+        return $this->money;
     }
 
     public function findAnimalByName(string $name): ?Animal
@@ -178,21 +198,6 @@ class Game
     public function foods(): array
     {
         return $this->foods;
-    }
-
-    public function money(): int
-    {
-        return $this->money;
-    }
-
-    public function setMoney(int $amount): void
-    {
-        $this->money = $amount;
-    }
-
-    public function incrementMoney($amount): void
-    {
-        $this->setMoney($this->money() + $amount);
     }
 
     public function decrementMoney($amount): void
