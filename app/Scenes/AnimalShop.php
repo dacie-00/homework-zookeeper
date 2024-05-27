@@ -35,6 +35,7 @@ class AnimalShop
                 $name = $this->game->askQuestion("What will the {$newAnimal->kind()}'s name be? ");
                 $newAnimal->setName($name);
                 echo "The new animal has been added to your zoo!\n";
+                $this->displayTable();
                 continue;
             }
             if ($action == "exit shop") {
