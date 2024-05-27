@@ -30,6 +30,10 @@ class Zoo
                 "food storage",
                 "next turn"
             ]);
+            if (count($this->game->animals()) == 0 && ($action == "select animal")) {
+                echo "Cannot select any animal (you don't have any)\n";
+                continue;
+            }
             if ($action == "view zoo") {
                 $this->displayTable();
                 continue;
@@ -68,6 +72,10 @@ class Zoo
 
     private function displayTable(): void
     {
+        if (count($this->game->animals()) == 0) {
+            echo "You have no animals in your zoo! Buy some!\n";
+            return;
+        }
         $table = new Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Zoo");
