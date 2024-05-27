@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace App;
 
 
+use App\Scenes\AnimalShop;
 use App\UI\StatBar;
 use stdClass;
+use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Helper\Table;
@@ -16,24 +18,29 @@ use Symfony\Component\Console\Question\Question;
 
 class Game
 {
-    private const STATE_ANIMAL_SHOP = "animal shop";
-    private const STATE_BUY_FOOD = "buy food";
-    private const STATE_ZOO = "zoo";
+    public const STATE_ANIMAL_SHOP = "animal shop";
+    public const STATE_FOOD_SHOP = "food shop";
+    public const STATE_ZOO = "zoo";
     private array $animalTypes;
     /**
      * @var Animal[]
      */
     private array $animals = [];
-    private $input;
-    private $output;
+    private InputInterface $consoleInput;
+    private OutputInterface $consoleOutput;
+    static private QuestionHelper $consoleHelper;
     private string $state;
 
-    public function __construct(InputInterface $input, OutputInterface $output, array $animalTypes)
+    private array $foodTypes;
+
+    public function __construct(InputInterface $consoleInput, OutputInterface $consoleOutput, array $animalTypes, array $foodTypes)
     {
-        $this->input = $input;
-        $this->output = $output;
+        $this->consoleInput = $consoleInput;
+        $this->consoleOutput = $consoleOutput;
+        self::$consoleHelper = new QuestionHelper();
         $this->state = self::STATE_ANIMAL_SHOP;
         $this->animalTypes = $animalTypes;
+        $this->foodTypes = $foodTypes;
     }
 
     public function displayAnimal(Animal $animal): void
@@ -44,15 +51,19 @@ class Game
         $foodReserves = $animal->foodReserves();
         $happiness = $animal->happiness();
 
-        StatBar::display($this->output, "Food Reserves", $foodReserves);
-        StatBar::display($this->output, "Happiness    ", $happiness);
+        StatBar::display($this->consoleOutput, "Food Reserves", $foodReserves);
+        StatBar::display($this->consoleOutput, "Happiness    ", $happiness);
     }
 
     public function run($input, $output)
     {
         while (true) {
             if ($this->state == self::STATE_ANIMAL_SHOP) {
-                $this->animalShop();
+                $animalShop = new AnimalShop($this);
+                $animalShop->run();
+            }
+            if ($this->state == self::STATE_FOOD_SHOP) {
+                $this->foodShop();
             }
             if ($this->state == self::STATE_ZOO) {
                 $this->zoo();
@@ -60,43 +71,29 @@ class Game
         }
     }
 
-    private function animalShop()
+    private function foodShop()
     {
-        $this->displayShopAnimalsTable();
+        $this->displayShopFoodsTable();
         while (true) {
             $helper = new QuestionHelper();
-            $question = new ChoiceQuestion("What do you want to do?", ["display available animals", "purchase animal", "exit shop"]);
-            $answer = $helper->ask($this->input, $this->output, $question);
+            $question = new ChoiceQuestion("What do you want to do?", ["display available foods", "purchase food", "exit shop"]);
+            $answer = $helper->ask($this->consoleInput, $this->consoleOutput, $question);
             if ($answer == "exit shop") {
                 $this->state = self::STATE_ZOO;
                 return;
             }
-            if ($answer == "purchase animal") {
-                $animalNames = array_column($this->animalTypes, "kind");
-                $question = new ChoiceQuestion("Which animal?", $animalNames);
-                $answer = $helper->ask($this->input, $this->output, $question);
+            if ($answer == "purchase food") {
+                $animalNames = array_column($this->foodTypes, "name");
+                $question = new ChoiceQuestion("Which food?", $animalNames);
+                $answer = $helper->ask($this->consoleInput, $this->consoleOutput, $question);
 
                 $newAnimal = $this->addAnimal($this->animalTypes[$answer]);
                 $question = new Question("What will the {$newAnimal->kind()}'s name be? ");
-                $name = $helper->ask($this->input, $this->output, $question);
+                $name = $helper->ask($this->consoleInput, $this->consoleOutput, $question);
                 $newAnimal->setName($name);
                 echo "The new animal has been added to your zoo!\n";
             }
         }
-    }
-
-    private function displayShopAnimalsTable(): void
-    {
-        $table = new Table($this->output);
-        $rows = [];
-        $table->setHeaderTitle("Animal Shop");
-        $table->setHeaders(["Species", "Price"]);
-        foreach ($this->animalTypes as $animal) {
-            $rows[] = [$animal->kind, "$animal->price$"];
-        }
-        $table->setStyle('box');
-        $table->setRows($rows);
-        $table->render();
     }
 
     public function addAnimal(stdClass $properties): Animal
@@ -108,78 +105,16 @@ class Game
 
     private function zoo(): void
     {
-        $this->displayZooAnimalsTable();
-        while (true) {
-            $helper = new QuestionHelper();
-            $question = new ChoiceQuestion("What do you want to do?", [
-                "view zoo",
-                "select animal",
-                "view animal shop",
-                "next turn"
-            ]);
-            $answer = $helper->ask($this->input, $this->output, $question);
-            if ($answer == "view zoo") {
-                $this->displayZooAnimalsTable();
-                continue;
-            }
-            if ($answer == "next turn") {
-                $this->step();
-                $this->displayZooAnimalsTable();
-                continue;
-            }
-            if ($answer == "view animal shop") {
-                $this->state = self::STATE_ANIMAL_SHOP;
-                break;
-            }
-            if ($answer == "select animal") {
-                $animalNames = [];
-                foreach ($this->animals as $animal) {
-                    $animalNames[] = $animal->name();
-                }
-                $question = new ChoiceQuestion("Which animal?", $animalNames);
-                $answer = $helper->ask($this->input, $this->output, $question);
-                $animal = $this->findAnimalByName($answer);
-                $this->displayAnimal($animal);
-                $question = new ChoiceQuestion("select action?", ["feed", "play", "pet", "work", "idle"]);
-                $answer = $helper->ask($this->input, $this->output, $question);
-                switch ($answer) {
-                    case "feed";
-                    $animal->setAction([$animal, "eat"], 2, ["name" => "being fed apple", "food" => "apple"]);
-                }
-            }
-        }
     }
 
-    private function displayZooAnimalsTable()
+    public function animals(): array
     {
-        $table = new Table($this->output);
-        $rows = [];
-        $table->setHeaderTitle("Zoo");
-        $table->setHeaders([
-            "Name",
-            "Kind",
-            "Happiness",
-            "Food Reserves",
-            "Action",
-            "<-- For turns"]);
-        foreach ($this->animals as $animal) {
-            $rows[] = [
-                $animal->name(),
-                $animal->kind(),
-                $animal->happiness(),
-                $animal->foodReserves(),
-                $animal->actionName(),
-                $animal->action()->times()
-            ];
-        }
-        $table->setStyle('box');
-        $table->setRows($rows);
-        $table->render();
+        return $this->animals;
     }
 
     private function displayBar(string $name, int $value, int $max, $color = "bright-white"): ProgressBar
     {
-        $displayBar = new ProgressBar($this->output, $max);
+        $displayBar = new ProgressBar($this->consoleOutput, $max);
         $displayBar->setFormat("$name [<fg=$color>%bar%</>]\n");
         $displayBar->setProgress($value);
         return $displayBar;
@@ -200,5 +135,37 @@ class Game
             }
         }
         return null;
+    }
+
+    public function consoleInput(): InputInterface
+    {
+        return $this->consoleInput;
+    }
+
+    public function consoleOutput(): OutputInterface
+    {
+        return $this->consoleOutput;
+    }
+
+    public function askChoiceQuestion(string $prompt, array $choices)
+    {
+        $question = new ChoiceQuestion($prompt, $choices);
+        return self::$consoleHelper->ask($this->consoleInput, $this->consoleOutput, $question);
+    }
+
+    public function askQuestion(string $prompt): string
+    {
+        $question = new Question($prompt);
+        return self::$consoleHelper->ask($this->consoleInput, $this->consoleOutput, $question);
+    }
+
+    public function setState(string $state): void
+    {
+        $this->state = $state;
+    }
+
+    public function animalTypes(): array
+    {
+        return $this->animalTypes;
     }
 }
