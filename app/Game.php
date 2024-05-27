@@ -5,6 +5,7 @@ namespace App;
 
 
 use App\Scenes\AnimalShop;
+use App\Scenes\FoodShop;
 use App\Scenes\Zoo;
 use stdClass;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -31,11 +32,11 @@ class Game
     private string $state;
     private int $money = 1000;
 
-    private array $foodTypes;
     /**
      * @var Food[]
      */
-    private array $foods;
+    private array $foodTypes;
+    private array $foods = [];
 
     public function __construct(InputInterface $consoleInput, OutputInterface $consoleOutput, array $animalTypes, array $foodTypes)
     {
@@ -44,9 +45,8 @@ class Game
         self::$consoleHelper = new QuestionHelper();
         $this->state = self::STATE_ANIMAL_SHOP;
         $this->animalTypes = $animalTypes;
-        $this->foodTypes = $foodTypes;
         foreach ($foodTypes as $foodType) {
-            $this->foods[$foodType->name] = new Food($foodType);
+            $this->foodTypes[$foodType->name] = new Food($foodType);
         }
     }
 
@@ -58,36 +58,12 @@ class Game
                 $animalShop->run();
             }
             if ($this->state == self::STATE_FOOD_SHOP) {
-                $this->foodShop();
+                $foodShop = new FoodShop($this);
+                $foodShop->run();
             }
             if ($this->state == self::STATE_ZOO) {
                 $zoo = new Zoo($this);
                 $zoo->run();
-            }
-        }
-    }
-
-    private function foodShop()
-    {
-        $this->displayShopFoodsTable();
-        while (true) {
-            $helper = new QuestionHelper();
-            $question = new ChoiceQuestion("What do you want to do?", ["display available foods", "purchase food", "exit shop"]);
-            $answer = $helper->ask($this->consoleInput, $this->consoleOutput, $question);
-            if ($answer == "exit shop") {
-                $this->state = self::STATE_ZOO;
-                return;
-            }
-            if ($answer == "purchase food") {
-                $animalNames = array_column($this->foodTypes, "name");
-                $question = new ChoiceQuestion("Which food?", $animalNames);
-                $answer = $helper->ask($this->consoleInput, $this->consoleOutput, $question);
-
-                $newAnimal = $this->addAnimal($this->animalTypes[$answer]);
-                $question = new Question("What will the {$newAnimal->kind()}'s name be? ");
-                $name = $helper->ask($this->consoleInput, $this->consoleOutput, $question);
-                $newAnimal->setName($name);
-                echo "The new animal has been added to your zoo!\n";
             }
         }
     }
@@ -152,9 +128,9 @@ class Game
 
     public function findFoodByName(string $name): ?Food
     {
-        foreach ($this->foods as $food) {
-            if ($food->name() == $name) {
-                return $food;
+        foreach ($this->foodTypes as $foodType) {
+            if ($foodType->name() == $name) {
+                return $foodType;
             }
         }
         return null;
@@ -203,5 +179,19 @@ class Game
     public function decrementMoney($amount): void
     {
         $this->setMoney($this->money() - $amount);
+    }
+
+    public function foodTypes()
+    {
+        return $this->foodTypes;
+    }
+
+    public function addFood($food): void
+    {
+        if (!isset($this->foods[$food->name()])) {
+            $this->foods[$food->name()] = 1;
+            return;
+        }
+        $this->foods[$food->name()] += 1;
     }
 }

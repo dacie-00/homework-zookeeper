@@ -39,4 +39,9 @@ class Food
     {
         return $this->nutritionalRatio;
     }
+
+    public function price(): string
+    {
+        return $this->price;
+    }
 }

@@ -21,7 +21,7 @@ class AnimalMenu
     {
         $this->displayAnimal($this->animal);
         $action = $this->game->askChoiceQuestion("Select action", ["feed", "play", "pet", "work", "idle"]);
-        $turnCount = $this->game->askQuestion("For how many turns?", function (string $turnCount) {
+        $turnCount = $this->game->askQuestion("For how many turns? \n > ", function (string $turnCount) {
             if (!is_numeric($turnCount)) {
                 throw new \RuntimeException("Turn count must be a number");
             }
@@ -35,8 +35,12 @@ class AnimalMenu
         switch ($action) {
             case "feed";
                 $foodNames = [];
-                foreach ($this->game->foods() as $food) {
-                    $foodNames[] = $food->name();
+                foreach ($this->game->foods() as $food => $count) {
+                    $foodNames[] = $food;
+                }
+                if (count($foodNames) < 1) {
+                    echo "You don't have any food!";
+                    return;
                 }
                 $foodName = $this->game->askChoiceQuestion("Select food to give", $foodNames);
                 $food = $this->game->findFoodByName($foodName);

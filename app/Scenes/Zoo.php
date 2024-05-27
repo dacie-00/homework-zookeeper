@@ -25,8 +25,8 @@ class Zoo
             $action = $this->game->askChoiceQuestion("What do you want to do?", [
                 "view zoo",
                 "select animal",
-                "view animal shop",
-                "view food shop",
+                "animal shop",
+                "food shop",
                 "next turn"
             ]);
             if ($action == "view zoo") {
@@ -38,11 +38,11 @@ class Zoo
                 $this->displayTable();
                 continue;
             }
-            if ($action == "view animal shop") {
+            if ($action == "animal shop") {
                 $this->game->setState($this->game::STATE_ANIMAL_SHOP);
                 return;
             }
-            if ($action == "view food shop") {
+            if ($action == "food shop") {
                 $this->game->setState($this->game::STATE_FOOD_SHOP);
                 return;
             }
