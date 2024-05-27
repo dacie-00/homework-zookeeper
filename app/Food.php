@@ -5,6 +5,7 @@ namespace App;
 
 use Nette\Schema\Elements\Structure;
 use Nette\Schema\Expect;
+use stdClass;
 
 class Food
 {
@@ -12,7 +13,7 @@ class Food
     private int $price;
     private float $nutritionalRatio;
 
-    public function __construct(\stdClass $properties)
+    public function __construct(stdClass $properties)
     {
         $this->name = $properties->name;
         $this->price = $properties->price;

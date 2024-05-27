@@ -6,6 +6,7 @@ namespace App\Scenes;
 use App\Animal;
 use App\Game;
 use App\UI\StatBar;
+use RuntimeException;
 
 class AnimalMenu
 {
@@ -26,14 +27,14 @@ class AnimalMenu
         if ($action != "feed" && $action != "talk") {
             $turnCount = $this->game->askQuestion("For how many turns? \n > ", function (string $turnCount) {
                 if (!is_numeric($turnCount)) {
-                    throw new \RuntimeException("Turn count must be a number");
+                    throw new RuntimeException("Turn count must be a number");
                 }
                 if ($turnCount < 1 || $turnCount > 100) {
-                    throw new \RuntimeException("Turn count can only be in the range of 1 to 100");
+                    throw new RuntimeException("Turn count can only be in the range of 1 to 100");
                 }
                 return $turnCount;
             });
-            $turnCount = (int) $turnCount;
+            $turnCount = (int)$turnCount;
         }
         switch ($action) {
             case "feed";
@@ -50,14 +51,14 @@ class AnimalMenu
                 $foodAmount = $this->game->foods()[$foodName];
                 $feedCount = $this->game->askQuestion("How much? (1 - $foodAmount) \n > ", function (string $feedCount) use ($foodAmount) {
                     if (!is_numeric($feedCount)) {
-                        throw new \RuntimeException("Food quantity must be a number");
+                        throw new RuntimeException("Food quantity must be a number");
                     }
                     if ($feedCount < 1 || $feedCount > $foodAmount) {
-                        throw new \RuntimeException("Food quantity must be >1 and no more than you have in stock");
+                        throw new RuntimeException("Food quantity must be >1 and no more than you have in stock");
                     }
                     return $feedCount;
                 });
-                $feedCount = (int) $feedCount;
+                $feedCount = (int)$feedCount;
                 $this->game->consumeFood($food, $feedCount);
                 $this->animal->setAction([$this->animal, "eat"], $feedCount, ["name" => "being fed {$food->name()}", "food" => $food]);
                 return;

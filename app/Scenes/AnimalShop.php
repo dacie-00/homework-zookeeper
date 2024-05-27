@@ -21,7 +21,7 @@ class AnimalShop
             $this->displayTable();
             echo "You have {$this->game->money()}$\n";
             if (!empty($messages)) {
-                foreach($messages as $message) {
+                foreach ($messages as $message) {
                     echo $message . "\n";
                 }
             }

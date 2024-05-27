@@ -93,11 +93,11 @@ class Game
             $action = $animal->actionName();
             $pay = self::BASE_ANIMAL_PAY * $animal->visitorAmusementRatio() * $happinessRatio;
             if ($action == "working") {
-                $this->incrementMoney((int) ($pay * 2));
+                $this->incrementMoney((int)($pay * 2));
             } elseif ($action == "idling") {
-                $this->incrementMoney((int) ($pay * 0.25));
+                $this->incrementMoney((int)($pay * 0.25));
             } else {
-                $this->incrementMoney((int) $pay);
+                $this->incrementMoney((int)$pay);
             }
             $animal->step();
             if ($animal->dead()) {
