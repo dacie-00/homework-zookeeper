@@ -3,6 +3,7 @@
 namespace App\Scenes;
 
 use App\Game;
+use RuntimeException;
 use Symfony\Component\Console\Helper\Table;
 
 class FoodShop
@@ -21,7 +22,7 @@ class FoodShop
             $this->displayTable();
             echo "You have {$this->game->money()}$\n";
             if (!empty($messages)) {
-                foreach($messages as $message) {
+                foreach ($messages as $message) {
                     echo $message . "\n";
                 }
             }
@@ -45,8 +46,29 @@ class FoodShop
                     $messages[] = "You cannot afford the {$food->name()}!";
                     continue;
                 }
-                $this->game->decrementMoney($food->price());
-                $this->game->addFood($food);
+                $money = $this->game->money();
+                $price = $food->price();
+                $quantity = $this->game->askQuestion("Enter your desired quantity (n to cancel) \n > ", function (string $quantity) use ($money, $price) {
+                    if ($quantity == "n") {
+                        return $quantity;
+                    }
+                    if (!is_numeric($quantity)) {
+                        throw new RuntimeException("Quantity must be a number");
+                    }
+                    if ($quantity < 1) {
+                        throw new RuntimeException("Quantity must be greater than 0");
+                    }
+                    if ($price * $quantity > $money) {
+                        throw new RuntimeException("You cannot afford so many!");
+                    }
+                    return $quantity;
+                });
+                if ($quantity == "n") {
+                    continue;
+                }
+                $quantity = (int)$quantity;
+                $this->game->decrementMoney($food->price() * $quantity);
+                $this->game->addFood($food, $quantity);
                 $messages[] = "{$food->name()} has been added to your food storage!";
                 continue;
             }

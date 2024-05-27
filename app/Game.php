@@ -192,18 +192,18 @@ class Game
         return $this->foodTypes;
     }
 
-    public function addFood($food): void
+    public function addFood(Food $food, int $quantity): void
     {
         if (!isset($this->foods[$food->name()])) {
-            $this->foods[$food->name()] = 1;
+            $this->foods[$food->name()] = $quantity;
             return;
         }
-        $this->foods[$food->name()] += 1;
+        $this->foods[$food->name()] += $quantity;
     }
 
-    public function consumeFood(Food $food, int $feedCount): void
+    public function consumeFood(Food $food, int $quantity): void
     {
-        $this->foods()[$food->name()] -= $feedCount;
+        $this->foods()[$food->name()] -= $quantity;
         if ($this->foods[$food->name()] < 0) {
             unset($this->foods[$food->name()]);
         }
