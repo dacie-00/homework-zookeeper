@@ -22,7 +22,14 @@ class AnimalMenu
     public function run(): void
     {
         $this->displayAnimal($this->animal);
-        $action = $this->game->askChoiceQuestion("Select action", ["feed", "play", "pet", "work", "idle", "talk"]);
+        $action = $this->game->askChoiceQuestion("Select action", [
+            "feed",
+            "play",
+            "pet",
+            "work",
+            "idle",
+            "talk"
+        ]);
         $turnCount = 0;
         if ($action != "feed" && $action != "talk") {
             $turnCount = $this->game->askQuestion("For how many turns? \n > ", function (string $turnCount) {
@@ -44,7 +51,6 @@ class AnimalMenu
                 }
                 if (count($foodNames) < 1) {
                     $this->game->addMessage("You don't have any food!");
-//                    echo "You don't have any food!";
                     return;
                 }
                 $foodName = $this->game->askChoiceQuestion("Select food to give", $foodNames);

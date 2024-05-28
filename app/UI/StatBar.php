@@ -8,7 +8,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StatBar
 {
-    public static function display(OutputInterface $output, string $name, int $value, int $max = 1000, string $color = null): ProgressBar
+    public static function display(
+        OutputInterface $output,
+        string          $name,
+        int             $value,
+        int             $max = 1000,
+        string          $color = null): ProgressBar
     {
         if ($color == null) {
             $color = self::getColorByProportion($value, $max);

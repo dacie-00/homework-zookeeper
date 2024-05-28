@@ -41,7 +41,11 @@ class Game
     private array $foodTypes;
     private array $foods = [];
 
-    public function __construct(InputInterface $consoleInput, OutputInterface $consoleOutput, array $animalTypes, array $foodTypes)
+    public function __construct(
+        InputInterface  $consoleInput,
+        OutputInterface $consoleOutput,
+        array           $animalTypes,
+        array           $foodTypes)
     {
         $this->consoleOutput = $consoleOutput;
         $this->consoleInput = $consoleInput;
@@ -121,6 +125,11 @@ class Game
     public function money(): int
     {
         return $this->money;
+    }
+
+    public function addMessage(string $string): void
+    {
+        $this->messages[] = $string;
     }
 
     public function findAnimalByName(string $name): ?Animal
@@ -218,11 +227,6 @@ class Game
     public function clearMessages(): void
     {
         $this->messages = [];
-    }
-
-    public function addMessage(string $string): void
-    {
-        $this->messages[] = $string;
     }
 
     public function echoMessages(): void
