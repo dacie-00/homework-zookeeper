@@ -29,7 +29,7 @@ class FoodStorage
 
     private function displayTable(): void
     {
-        $table = new Table($this->game->consoleOutput());
+        $table = new \App\UI\Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Food Storage");
         $table->setHeaders([
@@ -42,7 +42,6 @@ class FoodStorage
                 $quantity,
             ];
         }
-        $table->setStyle('box');
         $table->setRows($rows);
         $table->render();
     }

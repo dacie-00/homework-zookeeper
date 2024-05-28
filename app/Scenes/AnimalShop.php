@@ -58,14 +58,13 @@ class AnimalShop
 
     private function displayTable(): void
     {
-        $table = new Table($this->game->consoleOutput());
+        $table = new \App\UI\Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Animal Shop");
         $table->setHeaders(["Species", "Price"]);
         foreach ($this->game->animalTypes() as $animal) {
             $rows[] = [$animal->kind, "$animal->price$"];
         }
-        $table->setStyle('box');
         $table->setRows($rows);
         $table->render();
     }

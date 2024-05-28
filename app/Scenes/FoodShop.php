@@ -79,14 +79,13 @@ class FoodShop
 
     private function displayTable(): void
     {
-        $table = new Table($this->game->consoleOutput());
+        $table = new \App\UI\Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Food Shop");
         $table->setHeaders(["Food", "Price"]);
         foreach ($this->game->foodTypes() as $food) {
             $rows[] = [$food->name(), "{$food->price()}$"];
         }
-        $table->setStyle('box');
         $table->setRows($rows);
         $table->render();
     }

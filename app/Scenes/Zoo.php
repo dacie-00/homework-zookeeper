@@ -75,7 +75,7 @@ class Zoo
 
     private function displayTable(): void
     {
-        $table = new Table($this->game->consoleOutput());
+        $table = new \App\UI\Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Zoo");
         $table->setHeaders([
@@ -95,7 +95,6 @@ class Zoo
                 $animal->action()->times() < 100000 ? $animal->action()->times() : "forever"
             ];
         }
-        $table->setStyle('box');
         $table->setRows($rows);
         $table->render();
     }
