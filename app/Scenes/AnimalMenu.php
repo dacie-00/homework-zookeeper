@@ -43,7 +43,8 @@ class AnimalMenu
                     $foodNames[] = $food;
                 }
                 if (count($foodNames) < 1) {
-                    echo "You don't have any food!";
+                    $this->game->addMessage("You don't have any food!");
+//                    echo "You don't have any food!";
                     return;
                 }
                 $foodName = $this->game->askChoiceQuestion("Select food to give", $foodNames);

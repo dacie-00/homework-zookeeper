@@ -32,6 +32,7 @@ class Game
     private InputInterface $consoleInput;
     private OutputInterface $consoleOutput;
     private string $state;
+    private array $messages = [];
     private int $money = 1000;
 
     /**
@@ -101,7 +102,7 @@ class Game
             }
             $animal->step();
             if ($animal->dead()) {
-                echo "Oh no! {$animal->name()} the {$animal->kind()} has died!\n";
+                $this->addMessage("Oh no! {$animal->name()} the {$animal->kind()} has died!");
                 unset($this->animals[$index]);
             }
         }
@@ -207,5 +208,27 @@ class Game
     public function &foods(): array
     {
         return $this->foods;
+    }
+
+    public function messages(): array
+    {
+        return $this->messages;
+    }
+
+    public function clearMessages(): void
+    {
+        $this->messages = [];
+    }
+
+    public function addMessage(string $string): void
+    {
+        $this->messages[] = $string;
+    }
+
+    public function echoMessages(): void
+    {
+        foreach ($this->messages as $message) {
+            echo "$message\n";
+        }
     }
 }

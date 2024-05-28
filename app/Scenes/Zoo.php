@@ -17,9 +17,15 @@ class Zoo
 
     public function run(): void
     {
-        $this->displayTable();
         while (true) {
+            if (count($this->game->animals()) == 0) {
+                $this->game->addMessage("You have no animals in your zoo!\n");
+            } else {
+                $this->displayTable();
+            }
             echo "You have {$this->game->money()}$\n";
+            $this->game->echoMessages();
+            $this->game->clearMessages();
             $action = $this->game->askChoiceQuestion("What do you want to do?", [
                 "view zoo",
                 "select animal",
@@ -63,17 +69,12 @@ class Zoo
                 $this->game->setState($this->game::STATE_ANIMAL_MENU);
                 $animalMenu = new AnimalMenu($this->game, $animal);
                 $animalMenu->run();
-                $this->displayTable();
             }
         }
     }
 
     private function displayTable(): void
     {
-        if (count($this->game->animals()) == 0) {
-            echo "You have no animals in your zoo! Buy some!\n";
-            return;
-        }
         $table = new Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Zoo");

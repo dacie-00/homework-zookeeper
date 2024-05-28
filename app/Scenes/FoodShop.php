@@ -18,16 +18,11 @@ class FoodShop
 
     public function run(): void
     {
-        $messages = [];
         while (true) {
             $this->displayTable();
             echo "You have {$this->game->money()}$\n";
-            if (!empty($messages)) {
-                foreach ($messages as $message) {
-                    echo $message . "\n";
-                }
-            }
-            $messages = [];
+            $this->game->echoMessages();
+            $this->game->clearMessages();
             $action = $this->game->askChoiceQuestion("What do you want to do?", [
                 "display available foods",
                 "purchase food",
@@ -44,7 +39,7 @@ class FoodShop
                 $food = $this->game->askChoiceQuestion("Which food?", $foodNames);
                 $food = $this->game->foodTypes()[$food];
                 if ($food->price() > $this->game->money()) {
-                    $messages[] = "You cannot afford the {$food->name()}!";
+                    $this->game->addMessage("You cannot afford the {$food->name()}!");
                     continue;
                 }
                 $money = $this->game->money();
@@ -72,7 +67,7 @@ class FoodShop
                 $quantity = (int)$quantity;
                 $this->game->decrementMoney($food->price() * $quantity);
                 $this->game->addFood($food, $quantity);
-                $messages[] = "{$food->name()} has been added to your food storage!";
+                $this->game->addMessage("{$food->name()} has been added to your food storage!");
                 continue;
             }
             if ($action == "exit shop") {

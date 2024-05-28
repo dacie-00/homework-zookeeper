@@ -17,6 +17,11 @@ class FoodStorage
 
     public function run(): void
     {
+        if (count($this->game->foods()) == 0) {
+            $this->game->addMessage("You have no food in your storage!");
+            $this->game->setState($this->game::STATE_ZOO);
+            return;
+        }
         $this->displayTable();
         readline("Return to zoo");
         $this->game->setState($this->game::STATE_ZOO);
@@ -24,10 +29,6 @@ class FoodStorage
 
     private function displayTable(): void
     {
-        if (count($this->game->foods()) == 0) {
-            echo "You have no food in your storage!\n";
-            return;
-        }
         $table = new Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Food Storage");
