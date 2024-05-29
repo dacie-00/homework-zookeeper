@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Scenes;
 
 use App\Game;
+use App\UI\Table;
 
 class Zoo
 {
@@ -72,7 +73,7 @@ class Zoo
 
     private function displayTable(): void
     {
-        $table = new \App\UI\Table($this->game->consoleOutput());
+        $table = new Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Zoo");
         $table->setHeaders([

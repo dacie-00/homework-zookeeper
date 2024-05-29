@@ -3,6 +3,7 @@
 namespace App\Scenes;
 
 use App\Game;
+use App\UI\Table;
 
 class AnimalShop
 {
@@ -57,7 +58,7 @@ class AnimalShop
 
     private function displayTable(): void
     {
-        $table = new \App\UI\Table($this->game->consoleOutput());
+        $table = new Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Animal Shop");
         $table->setHeaders(["Species", "Price"]);

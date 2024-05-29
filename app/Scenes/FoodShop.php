@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Scenes;
 
 use App\Game;
+use App\UI\Table;
 use RuntimeException;
 
 class FoodShop
@@ -78,7 +79,7 @@ class FoodShop
 
     private function displayTable(): void
     {
-        $table = new \App\UI\Table($this->game->consoleOutput());
+        $table = new Table($this->game->consoleOutput());
         $rows = [];
         $table->setHeaderTitle("Food Shop");
         $table->setHeaders(["Food", "Price"]);
