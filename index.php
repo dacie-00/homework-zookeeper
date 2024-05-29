@@ -44,10 +44,7 @@ $playCommand = new class extends Command {
             try {
                 $parsedAnimal = $animalParser->parse($animalDefinition);
                 $animals[$parsedAnimal->kind] = $parsedAnimal;
-            } catch (ValidationException $e) {
-                echo "Error - invalid animal definition in " . basename($animalDefinition) . ": " . $e->getMessage() . "\n";
-                exit();
-            } catch (JsonException $e) {
+            } catch (ValidationException|JsonException $e) {
                 echo "Error - invalid animal definition in " . basename($animalDefinition) . ": " . $e->getMessage() . "\n";
                 exit();
             }
@@ -61,10 +58,7 @@ $playCommand = new class extends Command {
             try {
                 $parsedFood = $foodParser->parse($foodDefinition);
                 $foods[$parsedFood->name] = $parsedFood;
-            } catch (ValidationException $e) {
-                echo "Error - invalid food definition in " . basename($foodDefinition) . ": " . $e->getMessage() . "\n";
-                exit();
-            } catch (JsonException $e) {
+            } catch (ValidationException|JsonException $e) {
                 echo "Error - invalid food definition in " . basename($foodDefinition) . ": " . $e->getMessage() . "\n";
                 exit();
             }
