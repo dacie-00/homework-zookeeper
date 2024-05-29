@@ -5,7 +5,6 @@ namespace App\Scenes;
 
 use App\Game;
 use RuntimeException;
-use Symfony\Component\Console\Helper\Table;
 
 class FoodShop
 {

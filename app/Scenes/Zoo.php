@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Scenes;
 
 use App\Game;
-use Symfony\Component\Console\Helper\Table;
 
 class Zoo
 {

@@ -3,7 +3,6 @@
 namespace App\Scenes;
 
 use App\Game;
-use Symfony\Component\Console\Helper\Table;
 
 class AnimalShop
 {
