@@ -23,23 +23,26 @@ class Game
     const STATE_ANIMAL_MENU = "animal menu";
     const STATE_FOOD_STORAGE = "food storage";
     const BASE_ANIMAL_PAY = 2;
+
     static private QuestionHelper $consoleHelper;
+    private InputInterface $consoleInput;
+    private OutputInterface $consoleOutput;
+
     private array $animalTypes;
     /**
      * @var Animal[]
      */
     private array $animals = [];
-    private InputInterface $consoleInput;
-    private OutputInterface $consoleOutput;
-    private string $state;
-    private array $messages = [];
-    private int $money = 1000;
 
     /**
      * @var Food[]
      */
     private array $foodTypes;
     private array $foods = [];
+
+    private string $state;
+    private array $messages = [];
+    private int $money = 1000;
 
     public function __construct(
         InputInterface  $consoleInput,
