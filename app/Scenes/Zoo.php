@@ -38,12 +38,10 @@ class Zoo
                 continue;
             }
             if ($action == "view zoo") {
-                $this->displayTable();
                 continue;
             }
             if ($action == "next turn") {
                 $this->game->step();
-                $this->displayTable();
                 continue;
             }
             if ($action == "animal shop") {
