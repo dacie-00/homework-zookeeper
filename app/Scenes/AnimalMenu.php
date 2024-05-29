@@ -84,7 +84,9 @@ class AnimalMenu
                 $this->animal->setAction([$this->animal, "idle"], $turnCount, ["name" => "idling"]);
                 return;
             case "talk";
-                echo $this->animal->sound() . "\n";
+                $this->game->addMessage(
+                    "{$this->animal->name()} the {$this->animal->kind()} says '{$this->animal->sound()}'"
+                );
                 return;
         }
 
