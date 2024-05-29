@@ -18,7 +18,7 @@ class Zoo
     {
         while (true) {
             if (count($this->game->animals()) == 0) {
-                $this->game->addMessage("You have no animals in your zoo!\n");
+                $this->game->addMessage("You have no animals in your zoo!");
             } else {
                 $this->displayTable();
             }
